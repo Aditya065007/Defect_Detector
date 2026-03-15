@@ -456,12 +456,4 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
-```
 
-**requirements.txt — no change:**
-```
-streamlit
-tensorflow-cpu
-Pillow
-numpy
-gdown
