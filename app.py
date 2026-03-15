@@ -8,112 +8,316 @@ import os
 st.set_page_config(
     page_title="FreshCheck — Food Quality Inspector",
     page_icon="🥦",
-    layout="centered"
+    layout="wide"
 )
 
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;500;600&display=swap');
+
 * { font-family: 'Poppins', sans-serif; }
-.main { background: #F5F5F5; }
-.block-container { padding-top: 0 !important; max-width: 480px !important; }
 
 .topbar {
-    background: #E23744; padding: 14px 20px;
-    border-radius: 0 0 0 0; margin: -1rem -1rem 0;
-    display: flex; justify-content: space-between; align-items: center;
+    background: #E23744;
+    padding: 16px 40px;
+    margin: -1rem -1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .topbar-logo {
-    font-family: 'Nunito', sans-serif; font-weight: 900;
-    font-size: 22px; color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: white;
 }
 .topbar-logo span { color: #FFD700; }
 .topbar-badge {
-    background: rgba(255,255,255,0.2); color: white;
-    font-size: 11px; font-weight: 600;
-    padding: 4px 12px; border-radius: 20px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.3);
 }
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
 .hero {
     background: linear-gradient(135deg, #E23744, #c0182a);
-    padding: 24px 20px 40px; margin: 0 -1rem;
+    padding: 48px 40px;
+    margin: 0 -1rem 32px;
     color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+.hero-left { max-width: 600px; }
 .hero-tag {
-    background: rgba(255,255,255,0.2); display: inline-block;
-    padding: 4px 12px; border-radius: 20px;
-    font-size: 11px; font-weight: 600; margin-bottom: 10px;
+    background: rgba(255,255,255,0.2);
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.25);
 }
-.hero h2 {
-    font-family: 'Nunito', sans-serif; font-weight: 900;
-    font-size: 24px; line-height: 1.2; margin-bottom: 6px;
+.hero h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+    line-height: 1.15;
+    margin-bottom: 12px;
 }
-.hero p { font-size: 13px; opacity: 0.85; }
+.hero p {
+    font-size: 15px;
+    opacity: 0.88;
+    line-height: 1.6;
+    max-width: 480px;
+}
+.hero-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+}
+.hero-stat {
+    text-align: center;
+}
+.hero-stat-num {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+}
+.hero-stat-label {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 2px;
+}
 
-.stats-row {
-    display: flex; gap: 10px;
-    margin: -20px 0 16px; position: relative; z-index: 2;
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 0 8px;
 }
-.stat-card {
-    flex: 1; background: white; border-radius: 12px;
-    padding: 12px; text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
-.stat-num {
-    font-family: 'Nunito', sans-serif; font-weight: 900;
-    font-size: 18px; color: #E23744;
+
+.card-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #1C1C1C;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.stat-label { font-size: 10px; color: #93959F; margin-top: 2px; }
+.card-title-dot {
+    width: 10px;
+    height: 10px;
+    background: #E23744;
+    border-radius: 50%;
+}
+.card-sub {
+    font-size: 13px;
+    color: #93959F;
+    margin-bottom: 20px;
+}
 
 .result-fresh {
-    background: #60B246; color: white;
-    padding: 20px; border-radius: 14px;
-    font-family: 'Nunito', sans-serif;
+    background: #60B246;
+    color: white;
+    padding: 24px;
+    border-radius: 14px;
+    margin-bottom: 16px;
 }
 .result-stale {
-    background: #E23744; color: white;
-    padding: 20px; border-radius: 14px;
-    font-family: 'Nunito', sans-serif;
+    background: #E23744;
+    color: white;
+    padding: 24px;
+    border-radius: 14px;
+    margin-bottom: 16px;
 }
-.result-verdict { font-weight: 900; font-size: 20px; margin-bottom: 4px; }
-.result-sub { font-size: 13px; opacity: 0.9; }
+.result-verdict {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+.result-sub { font-size: 14px; opacity: 0.9; }
 
 .action-fresh {
-    background: #F0FBF0; border: 1px solid #cce8cc;
-    border-radius: 12px; padding: 12px 14px; margin-top: 12px;
+    background: #F0FBF0;
+    border: 1px solid #cce8cc;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
 }
 .action-stale {
-    background: #FFF5F5; border: 1px solid #fcc;
-    border-radius: 12px; padding: 12px 14px; margin-top: 12px;
+    background: #FFF5F5;
+    border: 1px solid #fcc;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
 }
-.action-title { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
-.action-desc { font-size: 11px; color: #93959F; }
+.action-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #1C1C1C;
+}
+.action-desc {
+    font-size: 12px;
+    color: #93959F;
+    line-height: 1.5;
+}
 
-.stButton button {
-    background: #E23744 !important; color: white !important;
-    border-radius: 25px !important; font-family: 'Nunito', sans-serif !important;
-    font-weight: 800 !important; font-size: 16px !important;
-    border: none !important; width: 100% !important;
-    padding: 12px !important;
+.metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 16px;
 }
-.stButton button:hover { background: #c0182a !important; }
+.metric-box {
+    background: #F5F5F5;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+.metric-val {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #1C1C1C;
+}
+.metric-label {
+    font-size: 10px;
+    color: #93959F;
+    margin-top: 3px;
+}
+
+.info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-top: 28px;
+}
+.info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #E9E9EB;
+}
+.info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.info-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+.info-text {
+    font-size: 13px;
+    color: #3D4152;
+    line-height: 1.5;
+}
+.info-text strong { font-weight: 600; color: #1C1C1C; }
+
+.produce-section {
+    margin-top: 28px;
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.produce-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+.produce-chip {
+    background: #F5F5F5;
+    border: 1px solid #E9E9EB;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3D4152;
+}
+
+.stButton > button {
+    background: #E23744 !important;
+    color: white !important;
+    border-radius: 25px !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    border: none !important;
+    width: 100% !important;
+    padding: 14px 28px !important;
+    margin-top: 8px !important;
+}
+.stButton > button:hover {
+    background: #c0182a !important;
+    transform: translateY(-1px);
+}
+
+.stFileUploader {
+    border: 2px dashed #E9E9EB !important;
+    border-radius: 12px !important;
+}
+
+footer { visibility: hidden; }
+#MainMenu { visibility: hidden; }
+header { visibility: hidden; }
 </style>
 
 <div class="topbar">
     <div class="topbar-logo">fresh<span>check</span></div>
-    <div class="topbar-badge">QA Portal</div>
+    <div class="topbar-right">
+        <div class="topbar-badge">Zomato QA Portal</div>
+        <div class="topbar-badge">Dark Kitchen Inspector</div>
+    </div>
 </div>
 
 <div class="hero">
-    <div class="hero-tag">AI-Powered Inspection</div>
-    <h2>Is your produce<br>fresh for delivery?</h2>
-    <p>Instant freshness detection for Zomato & Swiggy fulfilment centres.</p>
-</div>
-
-<div class="stats-row">
-    <div class="stat-card"><div class="stat-num">99.6%</div><div class="stat-label">ROC-AUC</div></div>
-    <div class="stat-card"><div class="stat-num">96%</div><div class="stat-label">Accuracy</div></div>
-    <div class="stat-card"><div class="stat-num">17ms</div><div class="stat-label">Per image</div></div>
+    <div class="hero-left">
+        <div class="hero-tag">AI-Powered Pre-Dispatch Inspection</div>
+        <h1>Is your produce<br>fresh for delivery?</h1>
+        <p>Automated food freshness detection for Zomato and Swiggy fulfilment centres. Upload a produce image and get an instant quality verdict powered by CNN.</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-num">99.6%</div>
+                <div class="hero-stat-label">ROC-AUC</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-num">96%</div>
+                <div class="hero-stat-label">Accuracy</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-num">17ms</div>
+                <div class="hero-stat-label">Inference</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-num">0.927</div>
+                <div class="hero-stat-label">Kappa Score</div>
+            </div>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -144,17 +348,39 @@ def process_image(img):
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
-st.markdown("### Upload Produce Image")
-uploaded_file = st.file_uploader(
-    "Supported: Apple, Banana, Orange, Tomato, Capsicum, Bitter Gourd",
-    type=["jpg", "jpeg", "png"]
-)
+col1, col2 = st.columns(2, gap="large")
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_container_width=True)
+with col1:
+    st.markdown("""
+    <div class="card">
+        <div class="card-title"><div class="card-title-dot"></div>Upload Produce Image</div>
+        <div class="card-sub">Supports Apple, Banana, Orange, Tomato, Capsicum, Bitter Gourd</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if st.button("Inspect Freshness"):
+    uploaded_file = st.file_uploader(
+        "Choose an image",
+        type=["jpg", "jpeg", "png"],
+        label_visibility="collapsed"
+    )
+
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image", use_container_width=True)
+        inspect_btn = st.button("Inspect Freshness")
+    else:
+        st.info("Upload a fruit or vegetable image to begin inspection.")
+        inspect_btn = False
+
+with col2:
+    st.markdown("""
+    <div class="card">
+        <div class="card-title"><div class="card-title-dot"></div>Inspection Result</div>
+        <div class="card-sub">Quality verdict will appear here after analysis</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if uploaded_file is not None and inspect_btn:
         with st.spinner("Analyzing produce..."):
             processed_img = process_image(image)
             prediction = model.predict(processed_img)[0][0]
@@ -167,8 +393,8 @@ if uploaded_file is not None:
                 <div class="result-sub">Confidence: {confidence:.1f}%</div>
             </div>
             <div class="action-stale">
-                <div class="action-title">Flag for disposal</div>
-                <div class="action-desc">Remove from active inventory and log for supplier review.</div>
+                <div class="action-title">Remove from active inventory</div>
+                <div class="action-desc">Item is stale. Flag for disposal and log for supplier quality review. Do not dispatch to customer.</div>
             </div>
             """, unsafe_allow_html=True)
         else:
@@ -180,19 +406,62 @@ if uploaded_file is not None:
             </div>
             <div class="action-fresh">
                 <div class="action-title">Proceed to packaging</div>
-                <div class="action-desc">Item cleared for dispatch. Route to packaging station immediately.</div>
+                <div class="action-desc">Item cleared for dispatch. Route to packaging station and proceed with delivery.</div>
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown("---")
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Model", "CNN")
-        col2.metric("Latency", "17ms")
-        col3.metric("Parameters", "4.28M")
-else:
-    st.info("Upload a fruit or vegetable image to begin inspection.")
+        st.markdown("""
+        <div class="metrics-row">
+            <div class="metric-box"><div class="metric-val">CNN</div><div class="metric-label">Model</div></div>
+            <div class="metric-box"><div class="metric-val">17ms</div><div class="metric-label">Latency</div></div>
+            <div class="metric-box"><div class="metric-val">4.28M</div><div class="metric-label">Parameters</div></div>
+            <div class="metric-box"><div class="metric-val">96%</div><div class="metric-label">Accuracy</div></div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div style="background:#F5F5F5;border-radius:14px;padding:48px;text-align:center;color:#93959F;">
+            <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:18px;color:#3D4152;margin-bottom:8px;">No image uploaded yet</div>
+            <div style="font-size:13px;">Upload a produce image on the left to get started</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 st.markdown("""
----
-**Supported produce:** Apple · Banana · Orange · Tomato · Capsicum · Bitter Gourd
-""")
+<div class="produce-section">
+    <div class="card-title"><div class="card-title-dot"></div>Supported Produce Categories</div>
+    <div class="produce-chips">
+        <div class="produce-chip">Apple</div>
+        <div class="produce-chip">Banana</div>
+        <div class="produce-chip">Orange</div>
+        <div class="produce-chip">Tomato</div>
+        <div class="produce-chip">Capsicum</div>
+        <div class="produce-chip">Bitter Gourd</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="card-title"><div class="card-title-dot"></div>Dispatch Guidelines</div>
+    <div class="info-row">
+        <div class="info-dot" style="background:#60B246;"></div>
+        <div class="info-text"><strong>Fresh</strong> — Item is safe to dispatch. Route to packaging immediately.</div>
+    </div>
+    <div class="info-row">
+        <div class="info-dot" style="background:#E23744;"></div>
+        <div class="info-text"><strong>Stale</strong> — Remove from active inventory. Flag for disposal and supplier review.</div>
+    </div>
+    <div class="info-row">
+        <div class="info-dot" style="background:#FF9A3C;"></div>
+        <div class="info-text"><strong>Confidence below 70%</strong> — Flag for human re-inspection before dispatch decision.</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+```
+
+**requirements.txt — no change:**
+```
+streamlit
+tensorflow-cpu
+Pillow
+numpy
+gdown
